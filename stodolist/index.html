@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>todolist</title>
+    <link rel="stylesheet" href="css/index.css" type="text/css"/>
+  </head>
+  <body>
+    <div id="app">
+      <div id="cover"></div>
+      <header>
+          <h1>justTodo</h1>
+      </header>
+      <section class="real-app">
+          <input
+                @keyup.enter="addTodo"
+                 type="text" autofocus="autofocus"
+                 placeholder="接下去做什么呢？"
+                 class="add-input">
+          <div v-for="item in filteredTodos" v-bind:class="[item.completed ? 'completed' : '', 'todo-item']">
+            <input
+                type="checkbox"
+                class="toggle"
+                v-model="item.completed">
+            <label>{{item.content}}</label>
+             <button
+                 @click="deleteTodo(item.id)"
+                 class="destroy"></button>
+          </div>
+
+          <div class="helper">
+            <span class="left"> {{unfinishedTodoLength}} items left</span>
+            <span class="tabs">
+              <span v-for="state in states"
+                  :class='[state,filter === state ? "actived" : ""]'
+                  @click="toggleFilter(state)">
+                {{state}}
+              </span>
+            </span>
+            <span class="clear" @click="clearAllCompleted">Clear Completed</span>
+          </div>
+      </section>
+      <div class="footer">
+          <span>written by feeling</span>
+      </div>
+    </div>
+
+  <script type="text/javascript" src="js/vue.js"></script>
+  <script type="text/javascript">
+    let id = 0;
+     var vm = new Vue({
+       el:"#app",
+       data:{
+         todoItem:[],
+         filter:'all',
+         states:['all','active','completed']
+       },
+       computed:{
+         unfinishedTodoLength(){
+           return this.todoItem.filter((todo) => !todo.completed).length;
+         },
+         filteredTodos(){
+            if(this.filter === 'all'){
+              return this.todoItem;
+            }
+            const completed = this.filter === 'completed';
+            return this.todoItem.filter(todo => completed === todo.completed);
+         }
+       },
+       methods:{
+         addTodo:function(e){
+           if(e.target.value!=""){
+             this.todoItem.unshift({
+               id:id++,
+               content:e.target.value.trim(),
+               completed:false
+             });
+           }
+           e.target.value = "";
+         },
+         deleteTodo:function(id){
+            this.todoItem.splice(this.todoItem.findIndex(todo => todo.id===id),1);
+         },
+         toggleFilter:function(state){
+           this.filter = state;
+         },
+         clearAllCompleted:function(){
+           this.todoItem = this.todoItem.filter(todo => !todo.completed);
+         }
+       }
+     });
+  </script>
+  </body>
+</html>
