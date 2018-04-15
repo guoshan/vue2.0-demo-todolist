@@ -47,13 +47,31 @@
 
   <script type="text/javascript" src="js/vue.js"></script>
   <script type="text/javascript">
-    let id = 0;
+    const STORAGE_KEY = 'todolist';
+      var store = {
+        fetch: function(){
+          return JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]');
+        },
+        save: function(items){
+          return window.localStorage.setItem(STORAGE_KEY,JSON.stringify(items))
+        }
+      };
+
+     let id = 0;
      var vm = new Vue({
        el:"#app",
        data:{
-         todoItem:[],
+         todoItem:store.fetch(),
          filter:'all',
          states:['all','active','completed']
+       },
+       watch:{
+         todoItem:{
+           handler:function(val,oval){
+              store.save(val);
+           },
+           deep:true
+         }
        },
        computed:{
          unfinishedTodoLength(){
